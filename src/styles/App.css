@@ -1,0 +1,34 @@
+.hover-lift {
+  transition: all 0.25s ease;
+}
+.job-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12) !important;
+  border-color: #0d6efd !important;
+}
+
+.hover-link:hover {
+  color: #0d6efd !important;
+  text-decoration: underline !important;
+}
+
+.bg-image {
+  background-image: fixed; 
+  height: 20vh;
+}
+.card-header {
+  font-weight: 500;
+}
+.job-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  background-color: #334155 !important;   /* Slightly lighter on hover */
+}
+.list-group-item-action:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.btn-outline-danger:hover {
+  color: white !important;
+}
