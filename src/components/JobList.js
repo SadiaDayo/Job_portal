@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import {
-  Card,
-  Button,
-  Badge,
-  Row,
-  Col,
-  Container,
-  Modal,
-} from 'react-bootstrap';
-const API_URL = process.env.REACT_APP_API_URL;
+import { Card, Button, Badge, Row, Col, Container, Modal } from 'react-bootstrap';
 
-fetch(`${API_URL}/jobs`)
+const API_URL = process.env.REACT_APP_API_URL;
 
 /* ---------- Date Helpers ---------- */
 function formatDate(dateStr) {
@@ -37,16 +28,26 @@ function JobList() {
 
   useEffect(() => {
     axios
-      .get('/api/jobs')
-      .then((res) => setJobs(res.data || []))
+      .get(`${API_URL}/api/jobs`) // use full API URL
+      .then((res) => {
+        // ensure jobs is always an array
+        if (Array.isArray(res.data)) {
+          setJobs(res.data);
+        } else if (Array.isArray(res.data.jobs)) {
+          setJobs(res.data.jobs);
+        } else {
+          setJobs([]);
+        }
+      })
       .catch((err) => {
         console.error('Error fetching jobs:', err);
+        setJobs([]);
       });
   }, []);
 
   return (
     <div>
-      {/* Hero Section with Background Image */}
+      {/* Hero Section */}
       <div
         className="bg-image text-white text-center d-flex align-items-center"
         style={{
@@ -58,7 +59,6 @@ function JobList() {
           position: 'relative',
         }}
       >
-        {/* Dark Overlay */}
         <div
           style={{
             position: 'absolute',
@@ -68,7 +68,6 @@ function JobList() {
           }}
         ></div>
 
-        {/* Content */}
         <Container className="position-relative" style={{ zIndex: 2 }}>
           <h1 className="display-4 fw-bold mb-3">
             Find Your Next Career Opportunity
@@ -98,61 +97,54 @@ function JobList() {
 
               return (
                 <Col key={job.id}>
-                 <Card
-  className="h-100 border-0 shadow-sm job-card"
-  onClick={() => setSelectedJob(job)}
-  style={{
-    cursor: 'pointer',
-    transition: 'all 0.25s ease',
-    backgroundColor: '#212529',        
-    color: '#f1f5f9',                  
-  }}
->
-  <Card.Body className="d-flex flex-column">
-    <Card.Title className="fw-bold mb-3" style={{ color: '#e2e8f0' }}>
-      {job.title}
-    </Card.Title>
+                  <Card
+                    className="h-100 border-0 shadow-sm job-card"
+                    onClick={() => setSelectedJob(job)}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'all 0.25s ease',
+                      backgroundColor: '#212529',
+                      color: '#f1f5f9',
+                    }}
+                  >
+                    <Card.Body className="d-flex flex-column">
+                      <Card.Title className="fw-bold mb-3" style={{ color: '#e2e8f0' }}>
+                        {job.title}
+                      </Card.Title>
 
-    <Card.Text 
-      className="flex-grow-1 mb-4" 
-      style={{ color: '#cbd5e1' }}     // Slightly lighter gray for description
-    >
-      {job.description?.substring(0, 110) || 'No description available'}...
-    </Card.Text>
+                      <Card.Text className="flex-grow-1 mb-4" style={{ color: '#cbd5e1' }}>
+                        {job.description?.substring(0, 110) || 'No description available'}...
+                      </Card.Text>
 
-    <div className="mt-auto">
-      <div className="mb-3 d-flex flex-wrap gap-2">
-        <Badge 
-          bg="info" 
-          text="dark" 
-          className="px-3 py-2 fw-medium"
-        >
-          {job.category}
-        </Badge>
+                      <div className="mt-auto">
+                        <div className="mb-3 d-flex flex-wrap gap-2">
+                          <Badge bg="info" text="dark" className="px-3 py-2 fw-medium">
+                            {job.category}
+                          </Badge>
 
-        <Badge 
-          bg={isClosed ? 'danger' : days <= 5 ? 'warning' : 'secondary'}
-          text="light"
-          className="px-3 py-2 fw-medium"
-        >
-          {isClosed ? 'Closed' : `${days} day${days !== 1 ? 's' : ''} left`}
-        </Badge>
-      </div>
+                          <Badge
+                            bg={isClosed ? 'danger' : days <= 5 ? 'warning' : 'secondary'}
+                            text="light"
+                            className="px-3 py-2 fw-medium"
+                          >
+                            {isClosed ? 'Closed' : `${days} day${days !== 1 ? 's' : ''} left`}
+                          </Badge>
+                        </div>
 
-      <Button
-        variant="outline-light"          // Changed to outline-light for dark background
-        size="sm"
-        className="w-100 fw-medium"
-        onClick={(e) => {
-          e.stopPropagation();
-          setSelectedJob(job);
-        }}
-      >
-        View Details
-      </Button>
-    </div>
-  </Card.Body>
-</Card>
+                        <Button
+                          variant="outline-light"
+                          size="sm"
+                          className="w-100 fw-medium"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedJob(job);
+                          }}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
                 </Col>
               );
             })}
@@ -170,12 +162,7 @@ function JobList() {
       </Container>
 
       {/* Job Details Modal */}
-      <Modal
-        show={!!selectedJob}
-        onHide={() => setSelectedJob(null)}
-        centered
-        size="lg"
-      >
+      <Modal show={!!selectedJob} onHide={() => setSelectedJob(null)} centered size="lg">
         {selectedJob && (
           <>
             <Modal.Header closeButton>
